@@ -6,77 +6,19 @@ https://docs.docker.com/ci-cd/github-actions/
 
 https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action
 
-- WORKFLOW FILE BEFORE CHANGES
-File: coderdba-coding-org/docker-git-workflow01/.github/workflows/docker-image.yml
+=====================
+REPO SETUP
+=====================
 
-name: Docker Image CI
+- CREATE GIT-REPO SECRETS TO DOCKER HUB
+Add secrets to this repo 
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+DOCKER_HUB_USERNAME
+DOCKER_HUB_ACCESS_TOKEN
 
-jobs:
-
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
-
-- WORKFLOW FILE AFTER CHANGES AS GIVEN IN https://docs.docker.com/ci-cd/github-actions/
-name: Docker Image CI
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    
-      - name: Check Out Repo 
-        uses: actions/checkout@v2
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
-        with:
+They will be referenced in .github/workflows/docker-image.yml as follows:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          context: ./
-          file: ./Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/goweb1:latest
-
-      - name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
 
 =====================
 WEB SERVER IN GOLANG
@@ -255,3 +197,77 @@ Linux 7d7872d0b166 5.10.25-linuxkit #1 SMP Tue Mar 23 09:27:39 UTC 2021 x86_64 L
 / # exit
 
 
+====================
+APPENDIX
+====================
+- OLD WORKFLOW FILE BEFORE CHANGES (cant remember which changes they were)
+File: coderdba-coding-org/docker-git-workflow01/.github/workflows/docker-image.yml
+
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+
+- WORKFLOW FILE AFTER CHANGES AS GIVEN IN https://docs.docker.com/ci-cd/github-actions/
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    
+      - name: Check Out Repo 
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/goweb1:latest
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
