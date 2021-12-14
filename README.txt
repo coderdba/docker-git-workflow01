@@ -20,9 +20,27 @@ They will be referenced in .github/workflows/docker-image.yml as follows:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
+
 =====================
-WEB SERVER IN GOLANG
+CREATE WORKFLOW FILE
 =====================
+.github/workflows/docker-image.yml
+--> refer to the actual file in this repo for content
+
+==========================================
+ADD CODE AND DOCKERFILE
+==========================================
+Add webserver code - see the golang instructions down below
+Add Dockerfile
+Test them locally
+Then do a 'push' to this repo
+- that will trigger the push event in the pipeline and pushes the image to docker hub
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+==========================================
+CREATE WEB SERVER CODE IN GOLANG
+==========================================
 
 =====================
 Golang references
